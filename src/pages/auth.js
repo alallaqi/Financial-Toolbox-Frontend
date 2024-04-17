@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { useAuth } from '../context/AuthContext'; // Ensure this path is correct to import your AuthContext
 import styles from '../styles/Auth.module.css';
 
 const AuthPage = () => {
@@ -12,10 +13,15 @@ const AuthPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState('');
   const [alert, setAlert] = useState('');
-
-  const router = useRouter(); // This is used for redirecting after successful login/signup
+  const { login, user } = useAuth(); // Use login function from AuthContext
+  const router = useRouter();
 
   useEffect(() => {
+    // If the user is already logged in, redirect them to the RestrictedHome page
+    if (user) {
+      router.push('/Restrictedhome');
+    }
+
     const fetchBackgroundImage = async () => {
       try {
         const response = await axios.get('https://source.unsplash.com/random');
@@ -27,7 +33,7 @@ const AuthPage = () => {
     };
 
     fetchBackgroundImage();
-  }, [isSignUp]);
+  }, [isSignUp, user, router]); // Added user and router as dependencies to react to their changes
 
   const handleInputChange = (event) => {
     setFormState({
@@ -39,15 +45,12 @@ const AuthPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log('Sending request with:', formState);
-    const url = isSignUp ? 'http://localhost:3001/api/users/register' : 'http://localhost:3001/api/users/login';
+    const { email, password } = formState;
     
     try {
-      const response = await axios.post(url, formState);
-      const { token } = response.data;
-      console.log('Response:', response.data.token);
-      localStorage.setItem('token', token);  // Store the token in localStorage
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;  // Set the default header
-      setAlert(response.data.message);
+      const data = await login(email, password); // Using login from AuthContext
+      console.log('Response:', data);
+      setAlert(data.message);
       router.push('/Restrictedhome'); // Redirect to a dashboard or another page on success
     } catch (error) {
       console.error('There was an error!', error);
@@ -55,11 +58,6 @@ const AuthPage = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token'); // Remove the token from storage
-    delete axios.defaults.headers.common['Authorization']; // Remove the auth header
-    router.push('/login'); // Redirect to login page
-  };
   return (
     <div className={styles.authContainer} style={{ backgroundImage: `url(${backgroundImage})` }}>
       {alert && <div className={styles.alert}>{alert}</div>}

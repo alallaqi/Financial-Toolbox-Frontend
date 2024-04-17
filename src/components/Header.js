@@ -1,8 +1,8 @@
 import React from 'react';
-import { useAuth } from '../../context/AuthContext'; // Ensure this path is correct
+import { useAuth } from '../context/AuthContext'; // Ensure this path is correct
 import { useRouter } from 'next/router';
 import styles from '../styles/Header.module.css'; // Ensure this path is correct
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, RadioGroup, Radio } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, RadioGroup, Radio, Button } from "@nextui-org/react";
 
 function Header({ isRestricted }) {
     const [selectedColor, setSelectedColor] = React.useState("default");
@@ -10,10 +10,6 @@ function Header({ isRestricted }) {
     const { user, logout } = useAuth();
     const router = useRouter();
 
-    const handleLogout = () => {
-        logout();
-        router.push('/home'); // Redirects to the home page after logout
-    };
 
     return (
         <div className={styles.headerContainer}>
@@ -28,11 +24,6 @@ function Header({ isRestricted }) {
                 <p className={styles.subtitle}>
                     {isRestricted && user ? `Welcome, ${user.username}` : "Your personal financial coach in your pocket."}
                 </p>
-                {isRestricted ? (
-                    <button className={styles.button} onClick={handleLogout}>Sign out</button>
-                ) : (
-                    <button className={styles.button}><a href="/auth">Sign in</a></button>
-                )}
             </div>
             {isRestricted && (
                 <div className="flex flex-col gap-3">

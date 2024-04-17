@@ -24,7 +24,6 @@
     color: white;
     text-align: center;
     z-index: 10;
-    flex: 1;
     min-width: 0;
     padding: 0 300px 0px 0px;
     
@@ -68,5 +67,5 @@
         bottom: 0;
         background-color: rgba(255, 255, 255, 0.293);  /* White with 30% opacity */
         border-top: 1px solid rgba(120, 124, 126, 0.5);  /* Light gray border with 50% opacity */
-        z-index: 2;  /* Ensures the overlay is above the background image but below the content */
+        z-index: 1;  /* Ensures the overlay is above the background image but below the content */
     }
