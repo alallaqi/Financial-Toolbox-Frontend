@@ -1,138 +1,77 @@
 import React from "react";
-import {Card, CardHeader, CardBody, CardFooter, Image, Button} from "@nextui-org/react";
+import { Card, CardHeader, CardFooter, Image, Button } from "@nextui-org/react";
 import { useRouter } from 'next/router'; 
-
 
 export default function App({ showFooter }) {
     const router = useRouter(); // Instantiate the router
 
-  // Function to navigate to the mortgage calculator page
+    // Function to handle navigation with the tool type as a query parameter
+    const navigateToCalculator = (toolType) => {
+        router.push(`/calculations?tool=${toolType}`);
+    };
 
-  // Function to handle navigation with the tool type as a query parameter
-  const navigateToCalculator = (toolType) => {
-    router.push(`/calculations?tool=${toolType}`);
-  };
+    const tools = [
+        { type: 'Mortgage', description: 'Calculate your mortgage', imgUrl: 'https://source.unsplash.com/random/real-estate' },
+        { type: 'Investment', description: 'Explore investment options', imgUrl: 'https://source.unsplash.com/random/investment' },
+        { type: 'Loan', description: 'Manage your loans', imgUrl: 'https://source.unsplash.com/random/loan' },
+        { type: 'Retirement', description: 'Plan your retirement', imgUrl: 'https://source.unsplash.com/random/retirement' },
+        { type: 'Emergency Fund', description: 'Build an emergency fund', imgUrl: 'https://source.unsplash.com/random/emergency-fund' }
+    ];
 
-    
-  return (
-    <div className="max-w-[900px] gap-2 grid grid-cols-12 grid-rows-2 px-8 mx-auto my-12">
-   {/* Mortgage Calculator Card */}
-    <Card className="col-span-12 sm:col-span-4 h-[300px]">
-      <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-        <p className="text-tiny text-white/60 uppercase font-bold">Mortgage Calculator</p>
-        <h4 className="text-white font-medium text-large">Calculate your mortgage</h4>
-      </CardHeader>
-      <Image
-        removeWrapper
-        alt="Card background"
-        className="z-0 w-full h-full object-cover"
-        src="https://source.unsplash.com/random/real-estate"
-      />
-      {showFooter && ( 
-      <CardFooter className="absolute bg-white/30 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
-        <div>
-          <p className="text-black text-tiny">Available Now.</p>
-          <p className="text-black text-tiny">Get notified.</p>
+    return (
+        <div className="max-w-[900px] grid grid-cols-3 gap-4 px-8 mx-auto my-12">
+            {tools.slice(0, 3).map((tool, index) => (
+                <Card key={index} className="h-[300px]">
+                    <CardHeader className="absolute z-10 top-1 flex-col !items-start">
+                        <p className="text-tiny text-white/60 uppercase font-bold">{tool.type}</p>
+                        <h4 className="text-white font-medium text-large">{tool.description}</h4>
+                    </CardHeader>
+                    <Image
+                        removeWrapper
+                        alt={`${tool.type} background`}
+                        className="z-0 w-full h-full object-cover"
+                        src={tool.imgUrl}
+                    />
+                    {showFooter && (
+                        <CardFooter className="absolute bg-white/30 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
+                            <div>
+                                <p className="text-black text-tiny">Available Now.</p>
+                                <p className="text-black text-tiny">Get notified.</p>
+                            </div>
+                            <Button onClick={() => navigateToCalculator(tool.type.toLowerCase())} className="text-tiny" color="primary" radius="full" size="sm">
+                                Use App
+                            </Button>
+                        </CardFooter>
+                    )}
+                </Card>
+            ))}
+            <div className="col-span-3 grid grid-cols-2 gap-4">
+                {tools.slice(3).map((tool, index) => (
+                    <Card key={index} className="h-[300px]">
+                        <CardHeader className="absolute z-10 top-1 flex-col !items-start">
+                            <p className="text-tiny text-white/60 uppercase font-bold">{tool.type}</p>
+                            <h4 className="text-white font-medium text-large">{tool.description}</h4>
+                        </CardHeader>
+                        <Image
+                            removeWrapper
+                            alt={`${tool.type} background`}
+                            className="z-0 w-full h-full object-cover"
+                            src={tool.imgUrl}
+                        />
+                        {showFooter && (
+                            <CardFooter className="absolute bg-white/30 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
+                                <div>
+                                    <p className="text-black text-tiny">Available Now.</p>
+                                    <p className="text-black text-tiny">Get notified.</p>
+                                </div>
+                                <Button onClick={() => navigateToCalculator(tool.type.toLowerCase())} className="text-tiny" color="primary" radius="full" size="sm">
+                                    Use App
+                                </Button>
+                            </CardFooter>
+                        )}
+                    </Card>
+                ))}
+            </div>
         </div>
-        <Button onClick={() => navigateToCalculator('mortgage')} className="text-tiny" color="primary" radius="full" size="sm">
-        Use App
-        </Button>
-      </CardFooter>
-      )}
-    </Card>
-    <Card className="col-span-12 sm:col-span-4 h-[300px]">
-      <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-        <p className="text-tiny text-white/60 uppercase font-bold">Plant a tree</p>
-        <h4 className="text-white font-medium text-large">Contribute to the planet</h4>
-      </CardHeader>
-      <Image
-        removeWrapper
-        alt="Card background"
-        className="z-0 w-full h-full object-cover"
-        src="https://source.unsplash.com/random/4"
-      />
-            {showFooter && ( 
-      <CardFooter className="absolute bg-white/30 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
-        <div>
-          <p className="text-black text-tiny">Available soon.</p>
-          <p className="text-black text-tiny">Get notified.</p>
-        </div>
-        <Button className="text-tiny" color="primary" radius="full" size="sm">
-        Use App
-        </Button>
-      </CardFooter>
-      )}
-    </Card>
-    <Card className="col-span-12 sm:col-span-4 h-[300px]">
-      <CardHeader className="absolute z-10 top-1 flex-col !items-start">
-        <p className="text-tiny text-white/60 uppercase font-bold">Supercharged</p>
-        <h4 className="text-white font-medium text-large">Creates beauty like a beast</h4>
-      </CardHeader>
-      <Image
-        removeWrapper
-        alt="Card background"
-        className="z-0 w-full h-full object-cover"
-        src="https://source.unsplash.com/random/6"
-      />
-          {showFooter && ( 
-      <CardFooter className="absolute bg-white/30 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
-        <div>
-          <p className="text-black text-tiny">Available soon.</p>
-          <p className="text-black text-tiny">Get notified.</p>
-        </div>
-        <Button className="text-tiny" color="primary" radius="full" size="sm">
-        Use App
-        </Button>
-      </CardFooter>
-      )}
-    </Card>
-    <Card isFooterBlurred className="w-full h-[300px] col-span-12 sm:col-span-5">
-      <CardHeader className="absolute z-10 top-1 flex-col items-start">
-        <p className="text-tiny text-white/60 uppercase font-bold">New</p>
-        <h4 className="text-white font-medium text-2xl">Acme camera</h4>
-      </CardHeader>
-      <Image
-        removeWrapper
-        alt="Card example background"
-        className="z-0 w-full h-full scale-125 -translate-y-6 object-cover"
-        src="https://source.unsplash.com/random/9"
-      />
-          {showFooter && ( 
-      <CardFooter className="absolute bg-white/30 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
-        <div>
-          <p className="text-black text-tiny">Available soon.</p>
-          <p className="text-black text-tiny">Get notified.</p>
-        </div>
-        <Button className="text-tiny" color="primary" radius="full" size="sm">
-        Use App
-        </Button>
-      </CardFooter>
-      )}
-    </Card>
-    <Card isFooterBlurred className="w-full h-[300px] col-span-12 sm:col-span-7">
-      <CardHeader className="absolute z-10 top-1 flex-col items-start">
-        <p className="text-tiny text-white/60 uppercase font-bold">Your day your way</p>
-        <h4 className="text-white/90 font-medium text-xl">Your checklist for better sleep</h4>
-      </CardHeader>
-      <Image
-        removeWrapper
-        alt="Relaxing app background"
-        className="z-0 w-full h-full object-cover"
-        src="https://source.unsplash.com/random"
-      />
-          {showFooter && ( 
-      <CardFooter className="absolute bg-white/30 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
-        <div>
-          <p className="text-black text-tiny">Available soon.</p>
-          <p className="text-black text-tiny">Get notified.</p>
-        </div>
-        <Button className="text-tiny" color="primary" radius="full" size="sm">
-          Use App
-        </Button>
-      </CardFooter>
-      )}
-    </Card>
-  </div>
-  );
+    );
 }
-

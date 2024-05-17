@@ -15,7 +15,7 @@ export default function RestrictedHome() {
 
   useEffect(() => {
     if (!user) {
-      router.push('/auth');  // Redirect to login page if not logged in
+      router.push('/login');  // Redirect to login page if not logged in
     }
   }, [user, router]);
 

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import MortgageCalculator from '../components/MortgageCalculator'; // Assuming this component exists
-import Header from '../components/Header'; // Import the Header component
-import NavbarComponent from '../components/NavbarComponent'; // Import the Navbar component
+import { MortgageCalculator, InvestmentCalculator, LoanCalculator, RetirementCalculator, EmergencyFundCalculator } from '../components/FinancialCalculators'; 
+import Header from '../components/Header';
+import NavbarComponent from '../components/NavbarComponent';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 const CalculationsPage = () => {
@@ -17,21 +17,25 @@ const CalculationsPage = () => {
     switch(tool) {
       case 'mortgage':
         return <MortgageCalculator />;
-      // Add other cases for different calculators as needed
+      case 'investment':
+        return <InvestmentCalculator />;
+      case 'loan':
+        return <LoanCalculator />;
+      case 'retirement':
+        return <RetirementCalculator />;
+      case 'emergency':
+        return <EmergencyFundCalculator />;
       default:
         return <p>Select a tool to see the calculator.</p>;
     }
   };
 
   return (
-    <div>
-          <ProtectedRoute >
-        <NavbarComponent />  {/* Include the NavbarComponent under the header */}
-      <Header />  {/* Include the Header at the top of the page */}
-      </ProtectedRoute>
-      <h1>Calculator</h1>
+    <ProtectedRoute>
+      <NavbarComponent />
+      <Header isRestricted={true}/>
       {renderCalculator()}
-    </div>
+    </ProtectedRoute>
   );
 };
 

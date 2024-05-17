@@ -1,54 +1,71 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import axiosInstance from '../config/axiosConfig';  // Ensure you import your configured axios instance
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import axiosInstance from '../config/axiosConfig';  // ensure this axios instance is set up with base URL etc.
+import Cookies from 'js-cookie';
 
 const AuthContext = createContext();
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const response = await axiosInstance.get('/users/session');
-        if (response.data.user) {
-          setUser(response.data.user);
-          setIsAuthenticated(true);
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            setLoading(true);
+            axiosInstance.get(`/api/users/profile/`)
+                .then(response => {
+                    setUser(response.data);
+                    console.log('Auth state initialized with user data from API.');
+                })
+                .catch(err => {
+                    console.error('Error fetching user details on init:', err);
+                    logout();
+                })
+                .finally(() => setLoading(false));
+        } else {
+            console.log('No token found, user needs to log in.');
+            setLoading(false);
         }
-      } catch (error) {
-        console.error("Authentication error", error);
-      } finally {
-        setLoading(false);
-      }
+    }, []);
+
+    const login = async (username, password) => {
+        try {
+            const response = await axiosInstance.post('/api/users/login', new URLSearchParams({
+                username,
+                password
+            }), {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            setUser(response.data.user);
+            Cookies.set('user', JSON.stringify(response.data.user), { expires: 1 });
+            console.log('Login successful, user:', response.data.user.username);
+            return response;
+        } catch (error) {
+            console.error('Login failed:', error.response?.data);
+            throw error;
+        }
     };
 
-    checkSession();
-  }, []);
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        Cookies.remove('user');
+        setUser(null);
+        delete axios.defaults.headers.common['Authorization'];
+        console.log('User logged out successfully.');
+    };
 
-  const login = async (email, password) => {
-    const response = await axiosInstance.post('/users/login', { email, password });
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      setUser(response.data.user);
-      setIsAuthenticated(true);
-    }
-    return response.data;
-  };
+    return (
+        <AuthContext.Provider value={{ user, isAuthenticated: !!user, loading, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
 
-  const logout = async () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    setIsAuthenticated(false);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, loading }}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
-}
+export default AuthProvider;

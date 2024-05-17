@@ -4,24 +4,18 @@ import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext'; // Ensure this path is correct to import your AuthContext
 import styles from '../styles/Auth.module.css';
 
-const AuthPage = () => {
+const SignupPage = () => {
   const [formState, setFormState] = useState({
-    email: '',
     username: '',
+    email: '',
     password: '',
   });
-  const [isSignUp, setIsSignUp] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState('');
   const [alert, setAlert] = useState('');
-  const { login, user } = useAuth(); // Use login function from AuthContext
+  const { register } = useAuth(); // Use register function from AuthContext
   const router = useRouter();
 
   useEffect(() => {
-    // If the user is already logged in, redirect them to the RestrictedHome page
-    if (user) {
-      router.push('/Restrictedhome');
-    }
-
     const fetchBackgroundImage = async () => {
       try {
         const response = await axios.get('https://source.unsplash.com/random');
@@ -33,7 +27,7 @@ const AuthPage = () => {
     };
 
     fetchBackgroundImage();
-  }, [isSignUp, user, router]); // Added user and router as dependencies to react to their changes
+  }, []);
 
   const handleInputChange = (event) => {
     setFormState({
@@ -41,57 +35,48 @@ const AuthPage = () => {
       [event.target.name]: event.target.value,
     });
   };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('Sending request with:', formState);
-    const { email, password } = formState;
-    
+    const { username, email, password } = formState;
+  
     try {
-      const data = await login(email, password); // Using login from AuthContext
-      console.log('Response:', data);
-      setAlert(data.message);
-      router.push('/Restrictedhome'); // Redirect to a dashboard or another page on success
+      const response = await register(username, email, password);
+      if (response && response.data) {
+        console.log('Registration successful:', response.data);
+        router.push('/login'); // Redirect to login page after successful registration
+      } else {
+        throw new Error('Unexpected response structure');
+      }
     } catch (error) {
-      console.error('There was an error!', error);
+      console.error('Registration failed:', error);
       setAlert(error.response?.data?.message || 'An error occurred. Please try again.');
     }
   };
+  
+  
+  
 
   return (
     <div className={styles.authContainer} style={{ backgroundImage: `url(${backgroundImage})` }}>
       {alert && <div className={styles.alert}>{alert}</div>}
       <div className={styles.formContainer}>
-        <div className={styles.logoContainer}>
-          {/* Placeholder for logo */}
-          <span className={styles.logo}></span>
-        </div>
-        <h1 className={styles.header}>{isSignUp ? 'Create an account' : 'Sign in'}</h1>
-        {isSignUp && (
-          <p className={styles.switchModeText}>
-            Already have an account? <span className={styles.switchModeLink} onClick={() => setIsSignUp(false)}>Sign in</span>
-          </p>
-        )}
-        {!isSignUp && (
-          <p className={styles.switchModeText}>
-            New user? <span className={styles.switchModeLink} onClick={() => setIsSignUp(true)}>Create an account</span>
-          </p>
-        )}
+        <h1 className={styles.header}>Create an account</h1>
+        <p className={styles.switchModeText}>
+          Already have an account? <a href="/login" className={styles.switchModeLink}>Sign in</a>
+        </p>
         <form onSubmit={handleSubmit} className={styles.form}>
-          {isSignUp && (
-            <div className={styles.inputContainer}>
-              <label htmlFor="username" className={styles.label}>Username</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                className={styles.input}
-                value={formState.username}
-                onChange={handleInputChange}
-                required={isSignUp}
-              />
-            </div>
-          )}
+          <div className={styles.inputContainer}>
+            <label htmlFor="username" className={styles.label}>Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              className={styles.input}
+              value={formState.username}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
           <div className={styles.inputContainer}>
             <label htmlFor="email" className={styles.label}>Email address</label>
             <input
@@ -116,13 +101,11 @@ const AuthPage = () => {
               required
             />
           </div>
-          <button type="submit" className={styles.button}>
-            {isSignUp ? 'Register' : 'Continue'}
-          </button>
+          <button type="submit" className={styles.button}>Register</button>
         </form>
       </div>
     </div>
   );
 };
 
-export default AuthPage;
+export default SignupPage;

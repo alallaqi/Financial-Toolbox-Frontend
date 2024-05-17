@@ -20,14 +20,14 @@ export default function App() {
 
     const handleLogout = () => {
         logout();
-        router.push('/home'); // Redirects to the login page after logout
+        router.push('/home'); // Redirects to the home page after logout
     };
 
     return (
         <Navbar>
-            <NavbarBrand>
+            <NavbarBrand onClick={() => router.push(user ? "/Restrictedhome" : "/home")}>
                 <AcmeLogo />
-                <p className="font-bold text-inherit">FINANCETB</p>
+                <p className="font-bold text-inherit cursor-pointer">FINANCETB</p>
             </NavbarBrand>
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
                 <Dropdown>
@@ -40,58 +40,63 @@ export default function App() {
                                 radius="sm"
                                 variant="light"
                             >
-                                Features
+                                Tools
                             </Button>
                         </DropdownTrigger>
                     </NavbarItem>
                     <DropdownMenu
-                        aria-label="ACME features"
+                        aria-label="ACME Tools"
                         className="w-[340px]"
-                        itemClasses={{
-                            base: "gap-4",
-                        }}
                     >
-                <DropdownItem
-  key="autoscaling"
-  description="Calculate your monthly mortgage payments quickly and easily with precision."
-  startContent={icons.scale}
->
-  <Link href="/calculations?tool=mortgage">
-    <a>Mortgage Calculator</a> {/* Use an anchor tag to make it clickable */}
-  </Link>
-</DropdownItem>
                         <DropdownItem
-                            key="usage_metrics"
-                            description="Real-time metrics to debug issues. Slow query added? We’ll show you exactly where."
-                            startContent={icons.activity}
+                            key="mortgage_calculator"
+                            description="Calculate your monthly mortgage payments quickly and easily."
+                            startContent={icons.scale}
                         >
-                            Usage Metrics
+                            <Link href="/calculations?tool=mortgage">
+                                Mortgage Calculator
+                            </Link>
                         </DropdownItem>
                         <DropdownItem
-                            key="production_ready"
-                            description="ACME runs on ACME, join us and others serving requests at web scale."
+                            key="loan_calculator"
+                            description="Estimate your loan repayments with our simple tool."
+                            startContent={icons.lock}
+                        >
+                            <Link href="/calculations?tool=loan">
+                                Loan Calculator
+                            </Link>
+                        </DropdownItem>
+                        <DropdownItem
+                            key="investment_calculator"
+                            description="Explore potential returns on your investments."
                             startContent={icons.flash}
                         >
-                            Production Ready
+                            <Link href="/calculations?tool=investment">
+                                Investment Calculator
+                            </Link>
                         </DropdownItem>
                         <DropdownItem
-                            key="99_uptime"
-                            description="Applications stay on the grid with high availability and high uptime guarantees."
+                            key="retirement_calculator"
+                            description="Plan for your retirement with our detailed projection tool."
                             startContent={icons.server}
                         >
-                            +99% Uptime
+                            <Link href="/calculations?tool=retirement">
+                                Retirement Calculator
+                            </Link>
                         </DropdownItem>
                         <DropdownItem
-                            key="supreme_support"
-                            description="Overcome any challenge with a supporting team ready to respond."
+                            key="emergency_fund_calculator"
+                            description="Calculate how much you need to save for emergencies."
                             startContent={icons.user}
                         >
-                            +Supreme Support
+                            <Link href="/calculations?tool=emergencyfund">
+                                Emergency Fund Calculator
+                            </Link>
                         </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>
                 <NavbarItem isActive>
-                <Link href={user ? "/Restrictedhome" : "/home"} aria-current="page">
+                    <Link href={user ? "/Restrictedhome" : "/home"} aria-current="page">
                         Home
                     </Link>
                 </NavbarItem>
@@ -106,10 +111,10 @@ export default function App() {
                 ) : (
                     <>
                         <NavbarItem className="hidden lg:flex">
-                            <Link href="/auth">Login</Link>
+                            <Link href="/login">Login</Link>
                         </NavbarItem>
                         <NavbarItem>
-                            <Button as={Link} color="primary" href="/auth" variant="flat">
+                            <Button as={Link} color="primary" href="/register" variant="flat">
                                 Sign Up
                             </Button>
                         </NavbarItem>

@@ -1,15 +1,45 @@
-import React from 'react';
-import { useAuth } from '../context/AuthContext'; // Ensure this path is correct
-import { useRouter } from 'next/router';
-import styles from '../styles/Header.module.css'; // Ensure this path is correct
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, RadioGroup, Radio, Button } from "@nextui-org/react";
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import axiosInstance from '../config/axiosConfig';
+import styles from '../styles/Header.module.css';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
 
 function Header({ isRestricted }) {
-    const [selectedColor, setSelectedColor] = React.useState("default");
-
+    const [selectedColor, setSelectedColor] = useState("default");
+    const [calculations, setCalculations] = useState([]);
     const { user, logout } = useAuth();
-    const router = useRouter();
 
+    useEffect(() => {
+        if (user && user.id) {
+            const fetchUserCalculations = async () => {
+                try {
+                    const response = await axiosInstance.get(`/api/users/profile/${user.id}`);
+                    console.log("User in Header:", response.data);
+                    
+                    const calculations = response.data.calculations || [];
+
+                    // Create a map to hold the latest calculation for each type
+                    const latestCalculationsMap = calculations.reduce((acc, calc) => {
+                        if (!acc[calc.type] || new Date(acc[calc.type].timestamp) < new Date(calc.timestamp)) {
+                            acc[calc.type] = calc;
+                        }
+                        return acc;
+                    }, {});
+
+                    // Convert the map values to an array
+                    const latestCalculations = Object.values(latestCalculationsMap);
+
+                    setCalculations(latestCalculations);
+                } catch (error) {
+                    console.error('Failed to fetch calculations:', error);
+                    if (error.response && error.response.status === 401) {
+                        logout(); // Logout only if unauthorized
+                    }
+                }
+            };
+            fetchUserCalculations();
+        }
+    }, [user, logout]);
 
     return (
         <div className={styles.headerContainer}>
@@ -25,41 +55,24 @@ function Header({ isRestricted }) {
                     {isRestricted && user ? `Welcome, ${user.username}` : "Your personal financial coach in your pocket."}
                 </p>
             </div>
-            {isRestricted && (
+            {isRestricted && calculations.length > 0 && (
                 <div className="flex flex-col gap-3">
-                    <Table 
-                        color={selectedColor}
-                        selectionMode="single" 
-                        aria-label="Example static collection table"
-                    >
-                        <TableHeader>
-                            <TableColumn>CALCULATIONS</TableColumn>
-                            <TableColumn>TOTAL</TableColumn>
-                            <TableColumn>TIME</TableColumn>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow key="1">
-                                <TableCell>Morgage</TableCell>
-                                <TableCell>300000</TableCell>
-                                <TableCell>0:00:0</TableCell>
+                <Table color={selectedColor} selectionMode="single">
+                    <TableHeader>
+                        <TableColumn>CALCULATION</TableColumn>
+                        <TableColumn>RESULT</TableColumn>
+                        <TableColumn>TIME</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                        {calculations.map((calc, index) => (
+                            <TableRow key={index}>
+                                <TableCell>{calc.type}</TableCell>
+                                <TableCell>{calc.result}</TableCell>
+                                <TableCell>{new Date(calc.timestamp).toLocaleString()}</TableCell>
                             </TableRow>
-                            <TableRow key="2">
-                                <TableCell>Investment</TableCell>
-                                <TableCell>20000</TableCell>
-                                <TableCell>0:00:0</TableCell>
-                            </TableRow>
-                            <TableRow key="3">
-                                <TableCell>Pension</TableCell>
-                                <TableCell>536000</TableCell>
-                                <TableCell>0:00:0</TableCell>
-                            </TableRow>
-                            <TableRow key="4">
-                                <TableCell>Morgage</TableCell>
-                                <TableCell>400000</TableCell>
-                                <TableCell>0:00:0</TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
+                        ))}
+                    </TableBody>
+                </Table>
                 </div>
             )}
         </div>

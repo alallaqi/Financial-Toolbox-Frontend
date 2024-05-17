@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3001/api', // Your backend base URL
+  baseURL: 'http://localhost:8080',
+  headers: {
+      'Content-Type': 'application/json'
+  }
 });
 
 // Intercept every request and add the token to the headers
