@@ -24,12 +24,12 @@ export default function App() {
     };
 
     return (
-        <Navbar>
-            <NavbarBrand onClick={() => router.push(user ? "/Restrictedhome" : "/home")}>
+        <Navbar className="navbar">
+            <NavbarBrand onClick={() => router.push(user ? "/Restrictedhome" : "/home")} className="navbar-brand">
                 <AcmeLogo />
                 <p className="font-bold text-inherit cursor-pointer">FINANCETB</p>
             </NavbarBrand>
-            <NavbarContent className="hidden sm:flex gap-4" justify="center">
+            <NavbarContent className="navbar-content" justify="center">
                 <Dropdown>
                     <NavbarItem>
                         <DropdownTrigger>

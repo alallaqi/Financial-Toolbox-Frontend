@@ -11,11 +11,11 @@ export default function App({ showFooter }) {
     };
 
     const tools = [
-        { type: 'Mortgage', description: 'Calculate your mortgage', imgUrl: 'https://source.unsplash.com/random/real-estate' },
-        { type: 'Investment', description: 'Explore investment options', imgUrl: 'https://source.unsplash.com/random/investment' },
-        { type: 'Loan', description: 'Manage your loans', imgUrl: 'https://source.unsplash.com/random/loan' },
-        { type: 'Retirement', description: 'Plan your retirement', imgUrl: 'https://source.unsplash.com/random/retirement' },
-        { type: 'Emergency Fund', description: 'Build an emergency fund', imgUrl: 'https://source.unsplash.com/random/emergency-fund' }
+        { type: 'Mortgage', description: 'Calculate your mortgage', imgUrl: 'https://source.unsplash.com/random/1' },
+        { type: 'Investment', description: 'Explore investment options', imgUrl: 'https://source.unsplash.com/random/2' },
+        { type: 'Loan', description: 'Manage your loans', imgUrl: 'https://source.unsplash.com/random/3' },
+        { type: 'Retirement', description: 'Plan your retirement', imgUrl: 'https://source.unsplash.com/random/4' },
+        { type: 'Emergency Fund', description: 'Build an emergency fund', imgUrl: 'https://source.unsplash.com/random/5' }
     ];
 
     return (

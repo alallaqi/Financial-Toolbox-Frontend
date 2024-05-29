@@ -4,6 +4,8 @@ import { AuthProvider } from '../context/AuthContext'; // Adjust path as necessa
 import '../app/globals.css';
 
 function MyApp({ Component, pageProps }) {
+
+
   return (
     <AuthProvider>
       <NextUIProvider>

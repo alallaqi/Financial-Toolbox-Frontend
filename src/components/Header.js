@@ -15,31 +15,32 @@ function Header({ isRestricted }) {
                 try {
                     const response = await axiosInstance.get(`/api/users/profile/${user.id}`);
                     console.log("User in Header:", response.data);
-                    
+        
                     const calculations = response.data.calculations || [];
-
-                    // Create a map to hold the latest calculation for each type
+                    console.log("Calculations fetched:", calculations);
+        
                     const latestCalculationsMap = calculations.reduce((acc, calc) => {
                         if (!acc[calc.type] || new Date(acc[calc.type].timestamp) < new Date(calc.timestamp)) {
                             acc[calc.type] = calc;
                         }
                         return acc;
                     }, {});
-
-                    // Convert the map values to an array
+        
                     const latestCalculations = Object.values(latestCalculationsMap);
-
+                    console.log("Latest calculations:", latestCalculations);
+        
                     setCalculations(latestCalculations);
                 } catch (error) {
                     console.error('Failed to fetch calculations:', error);
                     if (error.response && error.response.status === 401) {
-                        logout(); // Logout only if unauthorized
+                        logout();
                     }
                 }
             };
             fetchUserCalculations();
         }
     }, [user, logout]);
+    
 
     return (
         <div className={styles.headerContainer}>
@@ -56,25 +57,25 @@ function Header({ isRestricted }) {
                 </p>
             </div>
             {isRestricted && calculations.length > 0 && (
-                <div className="flex flex-col gap-3">
-                <Table color={selectedColor} selectionMode="single">
-                    <TableHeader>
-                        <TableColumn>CALCULATION</TableColumn>
-                        <TableColumn>RESULT</TableColumn>
-                        <TableColumn>TIME</TableColumn>
-                    </TableHeader>
-                    <TableBody>
-                        {calculations.map((calc, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{calc.type}</TableCell>
-                                <TableCell>{calc.result}</TableCell>
-                                <TableCell>{new Date(calc.timestamp).toLocaleString()}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                </div>
-            )}
+    <div className="flex flex-col gap-3">
+        <Table color={selectedColor} selectionMode="single">
+            <TableHeader>
+                <TableColumn>CALCULATION</TableColumn>
+                <TableColumn>RESULT</TableColumn>
+                <TableColumn>TIME</TableColumn>
+            </TableHeader>
+            <TableBody>
+                {calculations.map((calc, index) => (
+                    <TableRow key={index}>
+                        <TableCell>{calc.type}</TableCell>
+                        <TableCell>{calc.result}</TableCell>
+                        <TableCell>{new Date(calc.timestamp).toLocaleString()}</TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    </div>
+)}
         </div>
     );
 }
